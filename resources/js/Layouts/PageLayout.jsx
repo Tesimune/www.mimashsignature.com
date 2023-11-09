@@ -1,19 +1,17 @@
-import { useState } from 'react';
-import ApplicationLogo from '@/Components/ApplicationLogo';
-import Dropdown from '@/Components/Dropdown';
-import NavLink from '@/Components/NavLink';
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
-import { Link } from '@inertiajs/react';
+import { useState } from "react";
+import ApplicationLogo from "@/Components/ApplicationLogo";
+import Dropdown from "@/Components/Dropdown";
+import NavLink from "@/Components/NavLink";
+import { Link } from "@inertiajs/react";
 import {
     HiOutlineMenuAlt2,
     HiOutlineSearch,
     HiOutlineUser,
 } from "react-icons/hi";
-import SideBar from "./Components/SideBar";
+import SideCart from "./Components/SideCart";
 
 
-
-export default function Authenticated({ user, header, children }) {
+export default function PageLayout({ user, header, children }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
     return (
@@ -22,23 +20,13 @@ export default function Authenticated({ user, header, children }) {
                 <div className="navbar max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="navbar-start">
                         <div className="dropdown">
-                            <label
-                                tabIndex={0}
-                                className="btn btn-ghost btn-circle"
-                                htmlFor="my-drawer"
+                            <Link
+                                href="/"
+                                className="btn btn-ghost normal-case bg-slate-100 text-gold rounded-full"
                             >
-                                <HiOutlineMenuAlt2 className="h-5 w-5" />
-                            </label>
-                            <SideBar />
+                                <ApplicationLogo />
+                            </Link>
                         </div>
-                    </div>
-                    <div className="navbar-center">
-                        <Link
-                            href="/"
-                            className="btn btn-ghost normal-case text-xl"
-                        >
-                            <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800" />
-                        </Link>
                     </div>
                     <div className="navbar-end">
                         <button className="btn btn-ghost btn-circle">
@@ -73,7 +61,11 @@ export default function Authenticated({ user, header, children }) {
                 </div>
             </nav>
 
-            <div className="pt-9">
+            <div className="fixed right-5 bottom-5 z-10">
+                <SideCart />
+            </div>
+
+            <div className="pt-16">
                 <main>{children}</main>
             </div>
         </div>
