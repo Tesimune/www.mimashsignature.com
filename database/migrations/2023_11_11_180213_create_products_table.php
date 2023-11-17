@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('discount')->nullable();
             $table->integer('quantity')->nullable();
             $table->text('description')->nullable();
-            $table->string('image');
+            $table->text('image');
             $table->text('tag')->nullable();
             $table->text('color')->nullable();
             $table->text('size')->nullable();

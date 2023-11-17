@@ -18,16 +18,25 @@ class Products extends Model
         'image',
         'color',
         'size',
+        'tag',
         'store_id',
         'user_id', 
     ];
 
-    public function store()
-    {
-        return $this->belongsTo(Store::class);   
-    }
+    protected $casts = [
+        'image' => 'array',
+        'color' => 'array',
+        'size' => 'array',
+        'tag' => 'array',
+    ];
+    
+
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+    public function store()
+    {
+        return $this->belongsTo(Store::class);
     }
 }
