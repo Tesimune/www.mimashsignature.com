@@ -23,7 +23,7 @@ export default function Index({ stores }) {
                   </div>
                   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-9 p-2 md:p-5 xl:p-10 md:mx-9 mb-20">
                       <Link
-                          href={route("store.create")}
+                          href={route("myStore.create")}
                           className="card w-full bg-base-100 shadow-xl image-full z-0"
                       >
                           <figure>
@@ -49,13 +49,31 @@ export default function Index({ stores }) {
                                   />
                               </figure>
                               <div className="card-body">
-                                  <h2 className="card-title">Order's!</h2>
-                                  <p>Check order's current status.</p>
-                                  {/* <div className="card-actions justify-end">
-                                            <button className="btn btn-primary bg-gold">
-                                                Order's
-                                            </button>
-                                        </div> */}
+                                  <Link
+                                      href={route(
+                                          "myStore.show",
+                                          store.username
+                                      )}
+                                  >
+                                      <h2 className="card-title">
+                                          {store.store_name}
+                                      </h2>
+                                      <p>
+                                          {store.store_description.slice(0, 30)}
+                                          ...
+                                      </p>
+                                  </Link>
+                                  <div className="card-actions justify-end">
+                                      <Link
+                                          href={route(
+                                              "myStore.edit",
+                                              store.username
+                                          )}
+                                          className="btn btn-primary bg-gold hover:bg-gold/60"
+                                      >
+                                          edit
+                                      </Link>
+                                  </div>
                               </div>
                           </div>
                       ))}
