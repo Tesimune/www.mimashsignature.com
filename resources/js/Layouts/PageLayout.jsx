@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ApplicationLogo from "@/Components/ApplicationLogo";
 import Dropdown from "@/Components/Dropdown";
 import NavLink from "@/Components/NavLink";
@@ -8,11 +8,14 @@ import {
     HiOutlineSearch,
     HiOutlineUser,
 } from "react-icons/hi";
+import { BsShop } from "react-icons/bs";
 import SideCart from "./Components/SideCart";
+import { GiShoppingBag } from "react-icons/gi";
 
 
-export default function PageLayout({ user, header, children }) {
-    const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
+export default function PageLayout({ user, header, children, existingCartItems }) {
+    
+    const cartTotal = existingCartItems?.length
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -21,17 +24,23 @@ export default function PageLayout({ user, header, children }) {
                     <div className="navbar-start">
                         <div className="dropdown">
                             <Link
-                                href="/"
+                                href={route("home")}
                                 className="btn btn-ghost normal-case bg-slate-100 text-gold rounded-full"
                             >
                                 <ApplicationLogo />
                             </Link>
                         </div>
                     </div>
-                    <div className="navbar-end">
+                    <div className="navbar-end flex items-center">
                         <button className="btn btn-ghost btn-circle">
                             <HiOutlineSearch className="h-5 w-5" />
                         </button>
+                        <Link
+                            href={route("stores.stores")}
+                            className="btn btn-ghost btn-circle"
+                        >
+                            <BsShop className="h-5 w-5" />
+                        </Link>
                         <Dropdown>
                             <Dropdown.Trigger>
                                 <div className="btn btn-ghost btn-circle">
@@ -42,6 +51,9 @@ export default function PageLayout({ user, header, children }) {
                             </Dropdown.Trigger>
 
                             <Dropdown.Content>
+                                <Dropdown.Link href={route("home")}>
+                                    Home
+                                </Dropdown.Link>
                                 <Dropdown.Link href={route("dashboard")}>
                                     Dashboard
                                 </Dropdown.Link>
@@ -62,7 +74,14 @@ export default function PageLayout({ user, header, children }) {
             </nav>
 
             <div className="fixed right-5 bottom-5 z-10">
-                <SideCart />
+                {/* <SideCart /> */}
+                <Link
+                    href={route("cart")}
+                    className="btn btn-primary bg-gold hover:bg-gold/90 rounded-full"
+                >
+                    <GiShoppingBag className="h-5 w-4" />
+                    {cartTotal}
+                </Link>
             </div>
 
             <div className="pt-16">

@@ -33,8 +33,8 @@ function SideBar() {
                       </li>
                       <li>
                           <ResponsiveNavLink
-                              href={route("stores")}
-                              active={route().current("stores")}
+                              href={route("myStores.index")}
+                              active={route().current("myStores.index")}
                           >
                               <LuStore />
                               <span>My Store</span>

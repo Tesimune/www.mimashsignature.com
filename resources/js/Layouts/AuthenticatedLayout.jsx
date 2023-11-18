@@ -13,7 +13,7 @@ import SideBar from "./Components/SideBar";
 
 
 
-export default function Authenticated({ user, header, children }) {
+export default function Authenticated({ user, header, store, children }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
     return (
@@ -35,9 +35,9 @@ export default function Authenticated({ user, header, children }) {
                     <div className="navbar-center">
                         <Link
                             href="/"
-                            className="btn btn-ghost normal-case text-xl"
+                            className="btn btn-ghost normal-case text-xs"
                         >
-                            <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800" />
+                            {store?.store_name.slice(0, 19)}
                         </Link>
                     </div>
                     <div className="navbar-end">
@@ -54,6 +54,9 @@ export default function Authenticated({ user, header, children }) {
                             </Dropdown.Trigger>
 
                             <Dropdown.Content>
+                                <Dropdown.Link href={route("home")}>
+                                    Home
+                                </Dropdown.Link>
                                 <Dropdown.Link href={route("dashboard")}>
                                     Dashboard
                                 </Dropdown.Link>
