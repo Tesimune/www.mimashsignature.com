@@ -21,6 +21,7 @@
         "vite": "^4.0.0"
     },
     "dependencies": {
-        "react-icons": "^4.11.0"
+        "react-icons": "^4.11.0",
+        "react-paystack": "^4.0.3"
     }
 }
