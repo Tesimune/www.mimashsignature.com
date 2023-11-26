@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\ProfileController;
+use App\Models\Order;
 use App\Models\Products;
+use App\Models\Store;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -29,15 +31,23 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    return Inertia::render('Dashboard', [
+        'order' => Order::where('user_id', auth()->user('id'))->get(),
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/cart', function () {
-    return Inertia::render('Cart');
+Route::get('/{store:username}/cart', function (Store $store) {
+    return Inertia::render('Cart', [
+        'store' => $store
+    ]);
 })->name('cart');
 
-Route::get('/cart/payment', function () {
-    return Inertia::render('Payment');
+Route::get('/{store:username}/cart/payment', function (Store $store) {
+    $PAYSTACK_PUBLIC_KEY = env('PAYSTACK_PUBLIC_KEY');
+    return Inertia::render('Payment', [
+        'store' => $store,
+        'paystack_pub' => $PAYSTACK_PUBLIC_KEY
+    ]);
 })->name('cart.pay');
 
 Route::post('/upload', [ImageController::class, 'store'])->name('upload');
