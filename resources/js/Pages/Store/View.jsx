@@ -2,10 +2,12 @@ import { useState, useEffect } from "react";
 import PageLayout from "@/Layouts/PageLayout";
 import { Link, Head } from "@inertiajs/react";
 import { MdShoppingCart, MdRemoveShoppingCart } from "react-icons/md";
+import Show from "../Store/Product/Show";
 
-export default function View({ store, products }) {
+export default function Welcome({ auth, store, products }) {
     // Initialize cart items using state
     const [existingCartItems, setExistingCartItems] = useState([]);
+    const [totalForCart, setTotalForCart] = useState(0);
 
     // Load existing cart items from local storage on component mount
     useEffect(() => {
@@ -13,52 +15,55 @@ export default function View({ store, products }) {
         setExistingCartItems(storedCartItems);
     }, []);
 
-    // Update local storage whenever existingCartItems changes
+    // Update local storage and totalForCart whenever existingCartItems changes
     useEffect(() => {
         localStorage.setItem("cart", JSON.stringify(existingCartItems));
+
+        // Calculate total for items with store_id equal to 2
+        const total = existingCartItems
+            .filter((item) => item.store_id === store.id)
+
+        setTotalForCart(total.length);
     }, [existingCartItems]);
 
     const handleAddToCart = (product) => {
-        // Get the product details you want to store
-        const cartItem = {
-            id: product.id,
-            name: product.name,
-            img: product.image[0].url,
-            price: product.selling_price - product.discount,
-            quantity: 1,
-        };
+        const { id, store_id, price } = product;
+
+        // Get the existing cart items for the specific store_id
+        const storeCartItems =
+            existingCartItems.filter((item) => item.store_id === store_id) ||
+            [];
 
         // Check if the item is already in the cart
-        const isItemInCart = existingCartItems.some(
-            (item) => item.id === cartItem.id
-        );
+        const isItemInCart = storeCartItems.some((item) => item.id === id);
 
         if (!isItemInCart) {
-            // Add the new item to the cart
-            const updatedCartItems = [...existingCartItems, cartItem];
+            // Add the new item to the cart for the specific store_id
+            const updatedCartItems = [
+                ...existingCartItems,
+                { ...product, quantity: 1 },
+            ];
             setExistingCartItems(updatedCartItems);
 
             // Show an alert when the item is added
-            // alert(`${cartItem.name} added to the cart!`);
+            // alert(`${product.name} added to the cart!`);
         } else {
             // Remove the item if it's already in the cart (toggle functionality)
             const updatedCartItems = existingCartItems.filter(
-                (item) => item.id !== cartItem.id
+                (item) => item.id !== id
             );
             setExistingCartItems(updatedCartItems);
 
             // Show an alert when the item is removed
-            alert(`${cartItem.name} removed from the cart!`);
+            alert(`${product.name} removed from the cart!`);
         }
     };
 
     const [searchFilter, setSearchFilter] = useState("");
 
-    
     return (
-        <PageLayout existingCartItems={existingCartItems}>
-            <Head title={store.store_name} />
-
+        <PageLayout store={store} totalForCart={totalForCart}>
+            <Head title="Welcome" />
             <div className="sm:flex sm:justify-center sm:items-center min-h-screen bg-dots-darker bg-center bg-gray-100 selection:bg-gold selection:text-white">
                 <div className="max-w-7xl mx-auto p-6 lg:p-8">
                     <div className="flex max-w-7xl p-2 md:p-5 md:mx-9">
@@ -82,10 +87,11 @@ export default function View({ store, products }) {
                                         key={product.id}
                                         className="card card-compact w-full bg-base-100 shadow-xl z-0"
                                     >
-                                        <figure className="h-64">
+                                        <figure className="h-64 w-full">
                                             <img
                                                 src={product.image[0].url}
                                                 alt={product.name}
+                                                className="object-cover h-full w-full"
                                             />
                                         </figure>
                                         <div className="card-body bg-white text-slate-900">
@@ -110,16 +116,37 @@ export default function View({ store, products }) {
                                             </p>
                                             <div className="card-actions justify-start">
                                                 <div className="badge badge-outline">
-                                                    Fashion
-                                                </div>
-                                                <div className="badge badge-outline">
                                                     Products
                                                 </div>
+                                                {product?.tag?.map((tg) => (
+                                                    <div
+                                                        key={Math.random(
+                                                            0,
+                                                            9999
+                                                        )}
+                                                        className="badge badge-outline"
+                                                    >
+                                                        {tg.tag}
+                                                    </div>
+                                                ))}
                                             </div>
                                             <div className="card-actions justify-end">
-                                                <button className="btn btn-primary bg-gold hover:bg-gold/90">
-                                                    Buy Now
-                                                </button>
+                                                <Show
+                                                    product={product}
+                                                    existingCartItems={
+                                                        existingCartItems
+                                                    }
+                                                    setExistingCartItems={
+                                                        setExistingCartItems
+                                                    }
+                                                    handleAddToCart={
+                                                        handleAddToCart
+                                                    }
+                                                >
+                                                    <span className="btn btn-primary bg-gold hover:bg-gold/90">
+                                                        Show
+                                                    </span>
+                                                </Show>
                                                 <button
                                                     className="btn btn-primary bg-gold/30 hover:bg-gold/50"
                                                     onClick={() =>
@@ -137,9 +164,9 @@ export default function View({ store, products }) {
                                                             item.id ===
                                                             product.id
                                                     ) ? (
-                                                        <MdRemoveShoppingCart className="text-red-700" />
+                                                        <MdRemoveShoppingCart className="h-5 w-5 text-red-700" />
                                                     ) : (
-                                                        <MdShoppingCart className="text-blue-700" />
+                                                        <MdShoppingCart className="h-5 w-5 text-blue-700" />
                                                     )}
                                                 </button>
                                             </div>

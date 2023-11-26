@@ -6,7 +6,7 @@ import { IoMdCloseCircle } from "react-icons/io";
 import { MdWhatsapp } from "react-icons/md";
 
 
-export default function Cart() {
+export default function Cart({ store }) {
     // Initialize cart items using state
     const [existingCartItems, setExistingCartItems] = useState([]);
     const [cartUpdated, setCartUpdated] = useState(false); // Add this line
@@ -14,8 +14,12 @@ export default function Cart() {
     // Load existing cart items from local storage on component mount
     useEffect(() => {
         const storedCartItems = JSON.parse(localStorage.getItem("cart")) || [];
-        setExistingCartItems(storedCartItems);
-    }, [cartUpdated]); // Include cartUpdated in the dependency array
+        // Filter cart items based on store_id
+        const filteredCartItems = storedCartItems.filter(
+            (item) => item.store_id === store.id
+        );
+        setExistingCartItems(filteredCartItems);
+    }, []);
 
     // Effect to listen for changes in local storage
     useEffect(() => {
@@ -40,28 +44,33 @@ export default function Cart() {
         localStorage.setItem("cart", JSON.stringify(updatedCartItems));
     };
 
-    const handleQuantityChange = (itemId, newQuantity, newSize, newColor) => {
-        const updatedCartItems = existingCartItems.map((item) =>
-            item.id === itemId
-                ? {
-                      ...item,
-                      quantity: newQuantity,
-                      selectedSize: newSize,
-                      selectedColor: newColor,
-                  }
-                : item
-        );
-        setExistingCartItems(updatedCartItems);
-        localStorage.setItem("cart", JSON.stringify(updatedCartItems));
-    };
+const handleQuantityChange = (itemId, newQuantity, newSize, newColor) => {
+    // Ensure the new quantity is at least 1
+    newQuantity = Math.max(1, newQuantity);
+
+    const updatedCartItems = existingCartItems.map((item) =>
+        item.id === itemId
+            ? {
+                  ...item,
+                  quantity: newQuantity,
+                  selectedSize: newSize,
+                  selectedColor: newColor,
+              }
+            : item
+    );
+
+    setExistingCartItems(updatedCartItems);
+    localStorage.setItem("cart", JSON.stringify(updatedCartItems));
+};
 
 
     const calculateTotalPrice = () => {
         return existingCartItems.reduce(
-            (total, item) => total + item.quantity * item.price,
+            (total, item) => total + item.quantity * (item.selling_price - item.discount),
             0
         );
     };
+    
     return (
         <PageLayout>
             <Head title="Welcome" />
@@ -94,7 +103,7 @@ export default function Cart() {
                                     <div className="bg-slate-200 h-16 w-16 rounded-md">
                                         <img
                                             className="h-full w-full object-cover rounded-md"
-                                            src={Item.img}
+                                            src={Item.image[0].url}
                                             alt=""
                                         />
                                     </div>
@@ -129,7 +138,9 @@ export default function Cart() {
                                                 </button>
                                             </div>
                                             <span>
-                                                {Item.quantity} × ₦{Item.price}
+                                                {Item.quantity} × ₦
+                                                {Item.selling_price -
+                                                    Item.discount}
                                             </span>
                                         </div>
                                         <div className="grid justify-end w-full gap-2 items-baseline mr-9 border-slate-200">
@@ -228,7 +239,10 @@ export default function Cart() {
                                     <MdWhatsapp className="h-5 w-5" />
                                 </a>
                             </div>
-                            <Link href={route('cart.pay')} className="btn btn-primary bg-black hover:bg-gold">
+                            <Link
+                                href={route("cart.pay", store.username)}
+                                className="btn btn-primary bg-black hover:bg-gold"
+                            >
                                 checkout
                             </Link>
                         </div>

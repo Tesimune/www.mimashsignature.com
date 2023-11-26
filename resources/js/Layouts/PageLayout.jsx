@@ -13,9 +13,8 @@ import SideCart from "./Components/SideCart";
 import { GiShoppingBag } from "react-icons/gi";
 
 
-export default function PageLayout({ user, header, children, existingCartItems }) {
+export default function PageLayout({ user, header, children, store, totalForCart }) {
     
-    const cartTotal = existingCartItems?.length
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -75,13 +74,15 @@ export default function PageLayout({ user, header, children, existingCartItems }
 
             <div className="fixed right-5 bottom-5 z-10">
                 {/* <SideCart /> */}
-                <Link
-                    href={route("cart")}
-                    className="btn btn-primary bg-gold hover:bg-gold/90 rounded-full"
-                >
-                    <GiShoppingBag className="h-5 w-4" />
-                    {cartTotal}
-                </Link>
+                {store && (
+                    <Link
+                        href={route("cart", store.username)}
+                        className="btn btn-primary bg-gold hover:bg-gold/90 rounded-full"
+                    >
+                        <GiShoppingBag className="h-5 w-4" />
+                        {totalForCart}
+                    </Link>
+                )}
             </div>
 
             <div className="pt-16">

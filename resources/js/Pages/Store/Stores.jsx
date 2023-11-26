@@ -3,15 +3,9 @@ import { Head, Link } from "@inertiajs/react";
 import PageLayout from "@/Layouts/PageLayout";
 
 export default function Stores({ stores }) {
+
     return (
-        <PageLayout
-            // user={auth.user}
-            header={
-                <h2 className="font-semibold text-xl text-gray-800 leading-tight">
-                    Stores
-                </h2>
-            }
-        >
+        <PageLayout>
             <Head title="Stores" />
 
             <div className="sm:flex sm:justify-center sm:items-center pt-9">

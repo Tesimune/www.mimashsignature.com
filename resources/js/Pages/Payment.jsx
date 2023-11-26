@@ -3,7 +3,7 @@ import PageLayout from "@/Layouts/PageLayout";
 import { Link, Head, useForm } from "@inertiajs/react";
 import { usePaystackPayment } from "react-paystack";
 
-export default function Payment({ auth, products }) {
+export default function Payment({ auth, store, paystack_pub }) {
     const [existingCartItems, setExistingCartItems] = useState([]);
 
     useEffect(() => {
@@ -11,50 +11,51 @@ export default function Payment({ auth, products }) {
         setExistingCartItems(storedCartItems);
     }, []);
 
-    const calculateTotalPrice = () => {
-        return existingCartItems.reduce(
-            (total, item) => total + item.quantity * item.price,
-            0
-        );
-    };
+      const calculateTotalPrice = () => {
+          return existingCartItems.reduce(
+              (total, item) =>
+                  total + item.quantity * (item.selling_price - item.discount),
+              0
+          );
+      };
     const vat = 200;
     const Subtotal = calculateTotalPrice() + vat;
 
-    const [name, setName] = useState(auth?.user?.name);
-    const [email, setEmail] = useState(auth?.user?.email);
-    const [tel, setTel] = useState(auth?.user?.tel);
-    const [address, setAddress] = useState(auth?.user?.address);
     const [loading, setLoading] = useState(false);
 
+    const { data, setData, errors, post } = useForm({
+        name: auth.user.name ?? "",
+        email: auth.user.email ?? "",
+        tel: auth.user.tel ?? "",
+        address: auth.user.address ?? "",
+    });
     const config = {
         reference: "MS-" + Math.floor(Math.random() * 1000000000 + 1),
-        email,
+        email: data.email,
         amount: (Subtotal + 200) * 100, // Amount in kobo
-        publicKey: "",
+        publicKey: paystack_pub,
     };
-    
 
     const initializePayment = usePaystackPayment(config);
 
     const onSuccess = (reference) => {
         console.log(reference);
         setLoading(false);
+        submit()
     };
 
     const onClose = () => {
         console.log("closed");
         setLoading(false);
     };
-    
 
     function submit(e) {
         e.preventDefault();
-        setLoading(true);
-        initializePayment(onSuccess, onClose);
+        post(route("order.store"));        
     }
 
     return (
-        <PageLayout existingCartItems={existingCartItems}>
+        <PageLayout>
             <Head title="Payment" />
             <div className="sm:flex sm:justify-center min-h-screen w-full bg-dots-darker bg-center bg-gray-100 selection:bg-gold selection:text-white relative">
                 <div className="container mx-auto p-6 lg:p-8">
@@ -64,7 +65,10 @@ export default function Payment({ auth, products }) {
                                 Order Summary
                             </h3>
                             <form
-                                onSubmit={submit}
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    initializePayment(onSuccess, onClose);
+                                }}
                                 className="bg-gray-50 h-full w-full p-3 md:p-5"
                             >
                                 <div className="grid lg:grid-cols-2 mb-6">
@@ -78,9 +82,12 @@ export default function Payment({ auth, products }) {
                                             <input
                                                 type="name"
                                                 onChange={(e) =>
-                                                    setName(e.target.value)
+                                                    setData(
+                                                        "name",
+                                                        e.target.value
+                                                    )
                                                 }
-                                                value={name}
+                                                value={data.name}
                                                 placeholder="John Doe"
                                                 className="input input-bordered bg-white text-slate-700 w-full"
                                                 required
@@ -95,9 +102,12 @@ export default function Payment({ auth, products }) {
                                             <input
                                                 type="email"
                                                 onChange={(e) =>
-                                                    setEmail(e.target.value)
+                                                    setData(
+                                                        "email",
+                                                        e.target.value
+                                                    )
                                                 }
-                                                value={email}
+                                                value={data.email}
                                                 placeholder="Email"
                                                 className="input input-bordered bg-white text-slate-700 w-full"
                                                 required
@@ -112,9 +122,12 @@ export default function Payment({ auth, products }) {
                                             <input
                                                 type="tel"
                                                 onChange={(e) =>
-                                                    setTel(e.target.value)
+                                                    setData(
+                                                        "tel",
+                                                        e.target.value
+                                                    )
                                                 }
-                                                value={tel}
+                                                value={data.tel}
                                                 placeholder="08000000000"
                                                 className="input input-bordered bg-white text-slate-700 w-full"
                                                 // required
@@ -129,9 +142,12 @@ export default function Payment({ auth, products }) {
                                             <input
                                                 type="text"
                                                 onChange={(e) =>
-                                                    setAddress(e.target.value)
+                                                    setData(
+                                                        "address",
+                                                        e.target.value
+                                                    )
                                                 }
-                                                value={address}
+                                                value={data.address}
                                                 placeholder="No:12 Kaduna, Kaduna"
                                                 className="input input-bordered bg-white text-slate-700 w-full"
                                                 // required
@@ -152,7 +168,9 @@ export default function Payment({ auth, products }) {
                                                             </span>
                                                             <span>
                                                                 {Item.quantity}{" "}
-                                                                × ₦{Item.price}
+                                                                × ₦
+                                                                {Item.selling_price -
+                                                                    Item.discount}
                                                             </span>
                                                         </div>
                                                     )
@@ -180,10 +198,18 @@ export default function Payment({ auth, products }) {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="flex justify-end">
-                                    <button className="btn btn-primary bg-gold hover:bg-gold/90 text-white">
-                                        Submit
-                                    </button>
+                                <div className="flex md:justify-end w-full">
+                                    <div className="grid md:flex md:flex-row-reverse gap-3 w-full">
+                                        <button className="btn btn-primary w-full md:w-fit bg-gold hover:bg-gold/90 text-white">
+                                            Submit
+                                        </button>
+                                        <Link
+                                            href={route("cart", store.username)}
+                                            className="btn btn-primary w-full md:w-fit bg-black hover:bg-black/90 text-white"
+                                        >
+                                            Back to cart
+                                        </Link>
+                                    </div>
                                 </div>
                             </form>
                         </div>

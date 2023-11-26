@@ -8,6 +8,7 @@ import Show from "./Store/Product/Show";
 export default function Welcome({ auth, products }) {
     // Initialize cart items using state
     const [existingCartItems, setExistingCartItems] = useState([]);
+    const [totalForCart, setTotalForCart] = useState(0);
 
     // Load existing cart items from local storage on component mount
     useEffect(() => {
@@ -15,52 +16,59 @@ export default function Welcome({ auth, products }) {
         setExistingCartItems(storedCartItems);
     }, []);
 
-    // Update local storage whenever existingCartItems changes
+    // Update local storage and totalForCart whenever existingCartItems changes
     useEffect(() => {
         localStorage.setItem("cart", JSON.stringify(existingCartItems));
+
+        // Calculate total for items with store_id equal to 2
+        const total = existingCartItems.filter(
+            (item) => item.store_id === store.id
+        );
+
+        setTotalForCart(total.length);
     }, [existingCartItems]);
 
     const handleAddToCart = (product) => {
-        // Get the product details you want to store
-        const cartItem = {
-            id: product.id,
-            name: product.name,
-            img: product.image[0].url,
-            price: product.selling_price - product.discount,
-            size: product.size,
-            color: product.color,
-            quantity: 1,
-        };
+        const { id, store_id, price } = product;
+
+        // Get the existing cart items for the specific store_id
+        const storeCartItems =
+            existingCartItems.filter((item) => item.store_id === store_id) ||
+            [];
 
         // Check if the item is already in the cart
-        const isItemInCart = existingCartItems.some(
-            (item) => item.id === cartItem.id
-        );
+        const isItemInCart = storeCartItems.some((item) => item.id === id);
 
         if (!isItemInCart) {
-            // Add the new item to the cart
-            const updatedCartItems = [...existingCartItems, cartItem];
+            // Add the new item to the cart for the specific store_id
+            const updatedCartItems = [
+                ...existingCartItems,
+                { ...product, quantity: 1 },
+            ];
             setExistingCartItems(updatedCartItems);
 
             // Show an alert when the item is added
-            // alert(`${cartItem.name} added to the cart!`);
+            // alert(`${product.name} added to the cart!`);
         } else {
             // Remove the item if it's already in the cart (toggle functionality)
             const updatedCartItems = existingCartItems.filter(
-                (item) => item.id !== cartItem.id
+                (item) => item.id !== id
             );
             setExistingCartItems(updatedCartItems);
 
             // Show an alert when the item is removed
-            alert(`${cartItem.name} removed from the cart!`);
+            alert(`${product.name} removed from the cart!`);
         }
     };
 
     const [searchFilter, setSearchFilter] = useState("");
-
+    const store = {
+        id: 2,
+        username: "mimash-signature",
+    };
 
     return (
-        <PageLayout existingCartItems={existingCartItems}>
+        <PageLayout store={store} totalForCart={totalForCart}>
             <Head title="Welcome" />
             <div className="sm:flex sm:justify-center sm:items-center min-h-screen bg-dots-darker bg-center bg-gray-100 selection:bg-gold selection:text-white">
                 <div className="max-w-7xl mx-auto p-6 lg:p-8">
@@ -117,7 +125,13 @@ export default function Welcome({ auth, products }) {
                                                     Products
                                                 </div>
                                                 {product?.tag?.map((tg) => (
-                                                    <div key={Math.random(0, 9999)} className="badge badge-outline">
+                                                    <div
+                                                        key={Math.random(
+                                                            0,
+                                                            9999
+                                                        )}
+                                                        className="badge badge-outline"
+                                                    >
                                                         {tg.tag}
                                                     </div>
                                                 ))}
