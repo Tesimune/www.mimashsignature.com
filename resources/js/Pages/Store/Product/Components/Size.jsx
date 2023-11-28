@@ -3,15 +3,24 @@ import { MdAddCircle } from "react-icons/md";
 
 function Color({ size, setSize }) {
     const [newSize, setNewSize] = useState("");
+    
+    const removeSize = (itemToRemove) => {
+        // Use filter to create a new array excluding the item to be removed
+        const newArray = size.filter((_, index) => index !== itemToRemove);
+
+        // Set the state with the new array
+        setSize("size", newArray);
+    };
 
 
     return (
         <div className="grid grid-cols-2 md:grid-cols-4 items-center gap-2">
             {size.length > 0 && (
                 <>
-                    {size.map((sz) => (
+                    {size.map((sz, index) => (
                         <div
-                            key={Math.random(0, 9999)}
+                            onClick={() => removeSize(index)}
+                            key={index}
                             className="cursor-pointer border-2 p-2 rounded-xl"
                         >
                             <span className="h-9 rounded-xl">{sz.size}</span>

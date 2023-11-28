@@ -14,14 +14,24 @@ function Color({ color, setColor }) {
         setShow(false);
     };
 
+    const removeColor = (itemToRemove) => {
+        // Use filter to create a new array excluding the item to be removed
+        const newArray = color.filter((_, index) => index !== itemToRemove);
+
+        // Set the state with the new array
+        setColor('color', newArray);
+    };
+
+
     return (
         <div>
             <div className="grid grid-cols-4 md:grid-cols-5 xl:grid-cols-6 gap-2">
                 {color.length ? (
                     <>
-                        {color.map((cl) => (
+                        {color.map((cl, index) => (
                             <div
-                                key={Math.random(0, 9999)}
+                                onClick={() => removeColor(index)}
+                                key={index}
                                 className="cursor-pointer border-2 rounded-full"
                             >
                                 <div
@@ -54,13 +64,13 @@ function Color({ color, setColor }) {
                                 className="input bg-slate-200 w-full text-slate-800 border-none outline-none placeholder:text-slate-400"
                             />
                             <button
-                                onClick={() =>
-                                    {setColor("color", [
+                                onClick={() => {
+                                    setColor("color", [
                                         ...color,
                                         { color: newColor },
                                     ]);
-                                    setShow(false)}
-                                }
+                                    setShow(false);
+                                }}
                             >
                                 Add
                             </button>

@@ -25,15 +25,24 @@ function ImageUpload({ thumbnails, store, image, setImage }) {
         post(route("upload"));
     };
     // console.log(img)
+    const removeImage = (itemToRemove) => {
+        // Use filter to create a new array excluding the item to be removed
+        const newArray = image.filter((_, index) => index !== itemToRemove);
+
+        // Set the state with the new array
+        setImage('image', newArray);
+    };
+    
 
     return (
         <div>
             <div className="grid grid-cols-4 md:grid-cols-5 xl:grid-cols-6 gap-2">
                 {image.length ? (
                     <>
-                        {image.map((im) => (
+                        {image.map((im, index) => (
                             <div
-                                key={Math.random(0, 9999)}
+                                onClick={() => removeImage(index)}
+                                key={index}
                                 className="h-16 w-16 cursor-pointer border-2 rounded-xl relative"
                             >
                                 <img
@@ -60,8 +69,23 @@ function ImageUpload({ thumbnails, store, image, setImage }) {
                     {thumbnails.map((thumbnail) => (
                         <div key={thumbnail.id} className="w-full p-2 border-2">
                             <img
-                                onClick={(e) =>
-                                    {
+                                onClick={(e) => {
+                                    setImage("image", [
+                                        ...image,
+                                        {
+                                            id: thumbnail.id,
+                                            url: thumbnail.upload,
+                                        },
+                                    ]);
+                                    setShow(false);
+                                }}
+                                src={thumbnail.upload}
+                                alt={thumbnail.upload}
+                            />
+                            <div className="flex justify-center items-center gap-3 p-3">
+                                <span
+                                    className="cursor-pointer"
+                                    onClick={(e) => {
                                         setImage("image", [
                                             ...image,
                                             {
@@ -70,25 +94,7 @@ function ImageUpload({ thumbnails, store, image, setImage }) {
                                             },
                                         ]);
                                         setShow(false);
-                                    }
-                                }
-                                src={thumbnail.upload}
-                                alt={thumbnail.upload}
-                            />
-                            <div className="flex justify-center items-center gap-3 p-3">
-                                <span
-                                    className="cursor-pointer"
-                                    onClick={(e) =>
-                                        {setImage("image", [
-                                            ...image,
-                                            {
-                                                id: thumbnail.id,
-                                                url: thumbnail.upload,
-                                            },
-                                        ]);
-                                        setShow(false);
-                                        }
-                                    }
+                                    }}
                                 >
                                     Select
                                 </span>
