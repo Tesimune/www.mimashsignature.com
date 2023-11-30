@@ -75,12 +75,14 @@ export default function Show({ store, products }) {
                                           </span>
                                       </p>
                                       <div className="card-actions justify-start">
-                                          <div className="badge badge-outline">
-                                              Fashion
-                                          </div>
-                                          <div className="badge badge-outline">
-                                              Products
-                                          </div>
+                                          {product?.tag?.map((tg) => (
+                                              <div
+                                                  key={Math.random(0, 9999)}
+                                                  className="badge badge-outline"
+                                              >
+                                                  {tg.tag}
+                                              </div>
+                                          ))}
                                       </div>
                                       <div className="card-actions justify-end">
                                           <button
