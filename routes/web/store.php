@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\OrderPickupPriceController;
 use App\Http\Controllers\StoreController;
 use Illuminate\Support\Facades\Route;
 
@@ -17,4 +18,10 @@ Route::middleware('auth')->prefix("/mystore")->name("myStore.")->group(function 
     Route::get('/edit/{store:username}', [StoreController::class, 'edit'])->name('edit');
     Route::put('/store/{store:username}', [StoreController::class, 'update'])->name('update');
     Route::delete('/delete/{store:username}', [StoreController::class, 'destroy'])->name('destroy');
+});
+
+Route::middleware('auth')->prefix("/orderPickupPrice")->name("orderPickupPrice.")->group(function () {
+    Route::post('/store/{store:username}', [OrderPickupPriceController::class, 'store'])->name('store');
+    Route::put('/update/{orderPickupPrices}', [OrderPickupPriceController::class, 'update'])->name('update');
+    Route::delete('/delete/{orderPickupPrice}', [OrderPickupPriceController::class, 'destroy'])->name('destroy');
 });

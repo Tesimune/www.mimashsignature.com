@@ -4,6 +4,7 @@ use App\Http\Controllers\ImageController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Order;
+use App\Models\OrderPickupPrice;
 use App\Models\Products;
 use App\Models\Store;
 use Illuminate\Foundation\Application;
@@ -47,6 +48,7 @@ Route::get('/{store:username}/cart/payment', function (Store $store) {
     $PAYSTACK_PUBLIC_KEY = env('PAYSTACK_PUBLIC_KEY');
     return Inertia::render('Payment', [
         'store' => $store,
+        'orderPickupPrices' => OrderPickupPrice::where('store_id', $store->id)->get(),
         'paystack_pub' => $PAYSTACK_PUBLIC_KEY
     ]);
 })->name('cart.pay');
