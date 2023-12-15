@@ -13,11 +13,10 @@ class OrderController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function view()
+    public function view(Order $order)
     {
-        $reference = "2";
         return inertia::render('Store/Order/View', [
-            'orders' => Order::where('reference', $reference)->get()
+            'order' => $order
         ]);
     }
     /**
@@ -26,7 +25,7 @@ class OrderController extends Controller
     public function index(Store $store)
     {
         return Inertia::render('Store/Order/Index', [
-            'orders' => Order::where('store_id', $store)->get()
+            'order' => Order::where('store_id', $store)->get()
         ]);
     }
 

@@ -3,17 +3,25 @@ import PageLayout from "@/Layouts/PageLayout";
 import { Link, Head, useForm } from "@inertiajs/react";
 import { usePaystackPayment } from "react-paystack";
 
-export default function Payment({ auth, store, paystack_pub }) {
+export default function Payment({ auth, store, orderPickupPrices, paystack_pub }) {
     const [existingCartItems, setExistingCartItems] = useState([]);
-    const [gift, setGift] = useState(false)
-    const [loading, setLoading] = useState(0);
+    const [gift, setGift] = useState(false);
+    const [state, setState] = useState();
     const [delivery, setDelivery] = useState(1500);
+    const [location_and_price, setLocation_and_price] = useState([]);
 
     useEffect(() => {
         const storedCartItems = JSON.parse(localStorage.getItem("cart")) || [];
         setExistingCartItems(storedCartItems);
-        setData('content', storedCartItems)
-    }, []);
+        setData("content", storedCartItems);
+
+        // Set default values for state and location_and_price
+        if (orderPickupPrices.length > 0) {
+            setState(orderPickupPrices[0].state); // Set the default state to the first state in the array
+            setLocation_and_price(orderPickupPrices[0].location_and_price); // Set the default location_and_price to the first array in the array
+        }
+    }, [orderPickupPrices]); // Include orderPickupPrices in the dependency array
+
 
     const calculateTotalPrice = () => {
         return existingCartItems.reduce(
@@ -25,7 +33,8 @@ export default function Payment({ auth, store, paystack_pub }) {
 
     const vat = 100;
 
-    const SubtotalToPay = calculateTotalPrice() + Number(delivery) + Number(vat);
+    const SubtotalToPay =
+        calculateTotalPrice() + Number(delivery) + Number(vat);
 
     const paystack_charges = (subtotal) => {
         const percentageFee = (1.5 / 100) * subtotal;
@@ -43,36 +52,28 @@ export default function Payment({ auth, store, paystack_pub }) {
     };
 
     const charges = paystack_charges(SubtotalToPay) + Number(vat);
-    const SubtotalToDisplay = calculateTotalPrice() + Number(delivery) + charges;
-
-
+    const SubtotalToDisplay =
+        calculateTotalPrice() + Number(delivery) + charges;
 
     const [orderFrom, setOrderFrom] = useState({
         name: auth.user.name ?? "",
         email: auth.user.email ?? "",
         tel: auth.user.tel ?? "",
         address: auth.user.address ?? "",
-    })
+        state: ""
+    });
 
     const [orderTo, setOrderTo] = useState({
         name: auth.user.name ?? "",
         email: auth.user.email ?? "",
         tel: auth.user.tel ?? "",
         address: auth.user.address ?? "",
+        country: "Nigeria", // Add the country
+        state: state, // Add the state
     });
 
-    const { data, setData, errors, post } = useForm({
-        reference: "1243",
-        total_price: calculateTotalPrice(),
-        paid_price: SubtotalToDisplay,
-        received: SubtotalToPay,
-        charges,
-        order_from: orderFrom,
-        order_to: orderTo,
-        description: "",
-        content: "",
-    });
-    
+
+
     const config = {
         reference: "MS-" + Math.floor(Math.random() * 1000000000 + 1),
         email: orderFrom.email,
@@ -82,11 +83,27 @@ export default function Payment({ auth, store, paystack_pub }) {
 
     const initializePayment = usePaystackPayment(config);
 
+    
+    const { data, setData, errors, post } = useForm({
+        reference: config.reference,
+        total_price: calculateTotalPrice(),
+        paid_price: SubtotalToDisplay,
+        received: SubtotalToPay,
+        charges,
+        order_from: orderFrom,
+        order_to: {
+            ...orderTo,
+            delivery_location: `${orderTo.country}, ${orderTo.state}, ${orderTo.address}, ${orderTo.country}, ${orderTo.state}, ${orderTo.address}`,
+        },
+        description: "",
+        content: "",
+    });
+
+
     const onSuccess = (reference) => {
         console.log(reference);
-        setData('reference', data.reference)
-        setLoading(false);
-        submit()
+        setData("reference", data.reference);
+        post(route("order.store", store.username));
     };
 
     const onClose = () => {
@@ -94,10 +111,8 @@ export default function Payment({ auth, store, paystack_pub }) {
         setLoading(false);
     };
 
-    function submit(e) {
-        e.preventDefault();
-        post(route("order.store", store.username));        
-    }
+
+    console.log(data.order_to);
 
     return (
         <PageLayout>
@@ -117,8 +132,8 @@ export default function Payment({ auth, store, paystack_pub }) {
                                 }}
                                 className="bg-gray-50 h-full w-full p-3 md:p-5"
                             >
-                                <div className="grid lg:grid-cols-2 mb-6">
-                                    <div className="p-3 my-3 lg:my-0 lg:mx-3 border rounded-md">
+                                <div className="grid lg:flex mb-6">
+                                    <div className="p-3 my-3 lg:my-0 lg:mx-3 w-full border rounded-md">
                                         <div className="form-control w-full">
                                             <label className="label">
                                                 <span className="label-text">
@@ -128,10 +143,10 @@ export default function Payment({ auth, store, paystack_pub }) {
                                             <input
                                                 type="name"
                                                 onChange={(e) =>
-                                                    setOrderFrom(
-                                                        "name",
-                                                        e.target.value
-                                                    )
+                                                    setOrderFrom({
+                                                        ...orderTo,
+                                                        name: e.target.value,
+                                                    })
                                                 }
                                                 value={orderFrom.name}
                                                 placeholder="John Doe"
@@ -148,10 +163,10 @@ export default function Payment({ auth, store, paystack_pub }) {
                                             <input
                                                 type="email"
                                                 onChange={(e) =>
-                                                    setOrderFrom(
-                                                        "email",
-                                                        e.target.value
-                                                    )
+                                                    setOrderFrom({
+                                                        ...orderTo,
+                                                        email: e.target.value,
+                                                    })
                                                 }
                                                 value={orderFrom.email}
                                                 placeholder="Email"
@@ -168,10 +183,10 @@ export default function Payment({ auth, store, paystack_pub }) {
                                             <input
                                                 type="tel"
                                                 onChange={(e) =>
-                                                    setOrderFrom(
-                                                        "tel",
-                                                        e.target.value
-                                                    )
+                                                    setOrderFrom({
+                                                        ...orderTo,
+                                                        tel: e.target.value,
+                                                    })
                                                 }
                                                 value={orderFrom.tel}
                                                 placeholder="08000000000"
@@ -188,10 +203,10 @@ export default function Payment({ auth, store, paystack_pub }) {
                                             <input
                                                 type="text"
                                                 onChange={(e) =>
-                                                    setOrderFrom(
-                                                        "address",
-                                                        e.target.value
-                                                    )
+                                                    setOrderFrom({
+                                                        ...orderTo,
+                                                        address: e.target.value,
+                                                    })
                                                 }
                                                 value={orderFrom.address}
                                                 placeholder="No:12 Kaduna, Kaduna"
@@ -212,7 +227,7 @@ export default function Payment({ auth, store, paystack_pub }) {
                                         </div>
                                     </div>
                                     {gift && (
-                                        <div className="p-3 my-3 lg:my-0 lg:mx-3 border rounded-md">
+                                        <div className="p-3 my-3 lg:my-0 lg:mx-3 w-full border rounded-md">
                                             <div className="form-control w-full">
                                                 <label className="label">
                                                     <span className="label-text">
@@ -222,10 +237,11 @@ export default function Payment({ auth, store, paystack_pub }) {
                                                 <input
                                                     type="name"
                                                     onChange={(e) =>
-                                                        setOrderTo(
-                                                            "name",
-                                                            e.target.value
-                                                        )
+                                                        setOrderTo({
+                                                            ...orderTo,
+                                                            name: e.target
+                                                                .value,
+                                                        })
                                                     }
                                                     value={orderTo.name}
                                                     placeholder="John Doe"
@@ -242,10 +258,11 @@ export default function Payment({ auth, store, paystack_pub }) {
                                                 <input
                                                     type="email"
                                                     onChange={(e) =>
-                                                        setOrderTo(
-                                                            "email",
-                                                            e.target.value
-                                                        )
+                                                        setOrderTo({
+                                                            ...orderTo,
+                                                            email: e.target
+                                                                .value,
+                                                        })
                                                     }
                                                     value={orderTo.email}
                                                     placeholder="Email"
@@ -262,10 +279,10 @@ export default function Payment({ auth, store, paystack_pub }) {
                                                 <input
                                                     type="tel"
                                                     onChange={(e) =>
-                                                        setOrderTo(
-                                                            "tel",
-                                                            e.target.value
-                                                        )
+                                                        setOrderTo({
+                                                            ...orderTo,
+                                                            tel: e.target.value,
+                                                        })
                                                     }
                                                     value={orderTo.tel}
                                                     placeholder="08000000000"
@@ -282,10 +299,11 @@ export default function Payment({ auth, store, paystack_pub }) {
                                                 <input
                                                     type="text"
                                                     onChange={(e) =>
-                                                        setOrderTo(
-                                                            "address",
-                                                            e.target.value
-                                                        )
+                                                        setOrderTo({
+                                                            ...orderTo,
+                                                            address:
+                                                                e.target.value,
+                                                        })
                                                     }
                                                     value={orderTo.address}
                                                     placeholder="No:12 Kaduna, Kaduna"
@@ -296,8 +314,8 @@ export default function Payment({ auth, store, paystack_pub }) {
                                         </div>
                                     )}
                                 </div>
-                                <div className="grid lg:grid-cols-2 gap-5 py-3">
-                                    <div>
+                                <div className="grid lg:flex gap-5 py-3">
+                                    <div className="grid w-full">
                                         <label className="label">
                                             <span className="label-text">
                                                 Country?
@@ -306,46 +324,84 @@ export default function Payment({ auth, store, paystack_pub }) {
                                         <input
                                             type="text"
                                             onChange={(e) =>
-                                                setOrderFrom(
-                                                    "address",
-                                                    e.target.value
-                                                )
+                                                setOrderFrom({
+                                                    ...orderFrom,
+                                                    country: e.target.value,
+                                                })
                                             }
                                             value={"Nigeria"}
                                             placeholder="Nigeria"
                                             className="input input-bordered bg-white text-slate-700 w-full"
-                                            // required
                                         />
                                     </div>
-                                    <div>
+                                    <div className="grid w-full">
                                         <label className="label">
                                             <span className="label-text">
                                                 State?
                                             </span>
                                         </label>
-                                        <select
-                                            onChange={(e) =>
-                                                setDelivery(e.target.value)
-                                            }
-                                            value={delivery}
-                                            className="input input-bordered bg-white text-slate-700 w-full"
-                                        >
-                                            <option value={1500}>
-                                                Abuja - ₦1500
-                                            </option>
-                                            <option value={1000}>
-                                                Kaduna - ₦1000
-                                            </option>
-                                            <option value={2000}>
-                                                Kano - ₦2000
-                                            </option>
-                                            <option value={3000}>
-                                                Lagos - ₦3000
-                                            </option>
-                                            <option value={2500}>
-                                                Others - ₦2500
-                                            </option>
-                                        </select>
+
+                                        <div className="grid lg:flex gap-5">
+                                            <select
+                                                onChange={(e) => {
+                                                    setState(e.target.value);
+                                                    const selectedOrderPickupPrice =
+                                                        orderPickupPrices.find(
+                                                            (price) =>
+                                                                price.state ===
+                                                                e.target.value
+                                                        );
+                                                    setLocation_and_price(
+                                                        selectedOrderPickupPrice
+                                                            ? selectedOrderPickupPrice.location_and_price
+                                                            : []
+                                                    );
+                                                    setOrderTo({
+                                                        ...orderTo,
+                                                        state: e.target.value,
+                                                    });
+                                                }}
+                                                value={state}
+                                                className="input input-bordered bg-white text-slate-700 w-full"
+                                            >
+                                                {orderPickupPrices.map(
+                                                    (orderPickupPrice) => (
+                                                        <option
+                                                            key={
+                                                                orderPickupPrice.id
+                                                            }
+                                                            value={
+                                                                orderPickupPrice.state
+                                                            }
+                                                        >
+                                                            {
+                                                                orderPickupPrice.state
+                                                            }
+                                                        </option>
+                                                    )
+                                                )}
+                                            </select>
+
+                                            <select
+                                                onChange={(e) =>
+                                                    setDelivery(e.target.value)
+                                                }
+                                                value={delivery}
+                                                className="input input-bordered bg-white text-slate-700 w-full"
+                                            >
+                                                {location_and_price.map(
+                                                    (lap, index) => (
+                                                        <option
+                                                            key={index}
+                                                            value={lap.price}
+                                                        >
+                                                            {lap.location} - ₦
+                                                            {lap.price}
+                                                        </option>
+                                                    )
+                                                )}
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="bg-white w-full border rounded-md">

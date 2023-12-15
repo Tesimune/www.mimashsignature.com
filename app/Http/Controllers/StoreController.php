@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\OrderPickupPrice;
 use App\Models\Products;
 use App\Models\Store;
 use Illuminate\Http\Request;
@@ -113,6 +114,7 @@ class StoreController extends Controller
     {
         return Inertia::render('Store/Edit', [
             'store' => $store,
+            'orderPickupPrices' => OrderPickupPrice::where('store_id', $store->id)->get()
         ]);
     }
 
