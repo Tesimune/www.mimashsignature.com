@@ -1,27 +1,28 @@
 import { useState, useEffect } from "react";
 import PageLayout from "@/Layouts/PageLayout";
 import { Link, Head, useForm } from "@inertiajs/react";
-import { usePaystackPayment } from "react-paystack";
+import ConfirmToPay from "./Components/ConfirmToPay";
 
 export default function Payment({ auth, store, orderPickupPrices, paystack_pub }) {
     const [existingCartItems, setExistingCartItems] = useState([]);
     const [gift, setGift] = useState(false);
     const [state, setState] = useState();
-    const [delivery, setDelivery] = useState(1500);
+    const [delivery, setDelivery] = useState({state: "Kaduna", price: "1000"});
     const [location_and_price, setLocation_and_price] = useState([]);
 
     useEffect(() => {
         const storedCartItems = JSON.parse(localStorage.getItem("cart")) || [];
         setExistingCartItems(storedCartItems);
-        setData("content", storedCartItems);
 
         // Set default values for state and location_and_price
         if (orderPickupPrices.length > 0) {
-            setState(orderPickupPrices[0].state); // Set the default state to the first state in the array
-            setLocation_and_price(orderPickupPrices[0].location_and_price); // Set the default location_and_price to the first array in the array
+            setState(orderPickupPrices[0]?.state);
+            setLocation_and_price(
+                orderPickupPrices[0]?.location_and_price || []
+            );
+            setDelivery(orderPickupPrices[0]?.location_and_price[0] || {});
         }
     }, [orderPickupPrices]); // Include orderPickupPrices in the dependency array
-
 
     const calculateTotalPrice = () => {
         return existingCartItems.reduce(
@@ -33,34 +34,31 @@ export default function Payment({ auth, store, orderPickupPrices, paystack_pub }
 
     const vat = 100;
 
-    const SubtotalToPay =
-        calculateTotalPrice() + Number(delivery) + Number(vat);
+    const SubtotalToPay = calculateTotalPrice() + Number(delivery?.price) + Number(vat);
 
     const paystack_charges = (subtotal) => {
         const percentageFee = (1.5 / 100) * subtotal;
         const fixedFee = 100;
-
         // Apply the waived fee for transactions under ₦2500
         if (subtotal < 2500) {
-            return 0;
+            return (1.5 / 100) * subtotal;
         }
-
         // Calculate the total fee, capped at ₦2000
         const totalFee = Math.min(percentageFee + fixedFee, 2000);
-
         return totalFee;
     };
-
     const charges = paystack_charges(SubtotalToPay) + Number(vat);
-    const SubtotalToDisplay =
-        calculateTotalPrice() + Number(delivery) + charges;
+
+    const SubtotalToDisplay = calculateTotalPrice() + Number(delivery?.price) + charges;
 
     const [orderFrom, setOrderFrom] = useState({
         name: auth.user.name ?? "",
         email: auth.user.email ?? "",
         tel: auth.user.tel ?? "",
         address: auth.user.address ?? "",
-        state: ""
+        country: "Nigeria", // Add the country
+        state,
+        delivery,
     });
 
     const [orderTo, setOrderTo] = useState({
@@ -69,54 +67,47 @@ export default function Payment({ auth, store, orderPickupPrices, paystack_pub }
         tel: auth.user.tel ?? "",
         address: auth.user.address ?? "",
         country: "Nigeria", // Add the country
-        state: state, // Add the state
+        state, // Add the state
+        delivery,
     });
 
-
-
-    const config = {
-        reference: "MS-" + Math.floor(Math.random() * 1000000000 + 1),
-        email: orderFrom.email,
-        amount: SubtotalToPay * 100, // Amount in kobo
-        publicKey: paystack_pub,
-    };
-
-    const initializePayment = usePaystackPayment(config);
-
-    
-    const { data, setData, errors, post } = useForm({
-        reference: config.reference,
+    const [open, setOpen] = useState(false);
+    const [orderData, setOrderData] = useState({
         total_price: calculateTotalPrice(),
-        paid_price: SubtotalToDisplay,
-        received: SubtotalToPay,
+        SubtotalToDisplay,
+        SubtotalToPay,
         charges,
-        order_from: orderFrom,
-        order_to: {
-            ...orderTo,
-            delivery_location: `${orderTo.country}, ${orderTo.state}, ${orderTo.address}, ${orderTo.country}, ${orderTo.state}, ${orderTo.address}`,
-        },
+        orderFrom,
+        orderTo,
         description: "",
-        content: "",
+        content: existingCartItems,
     });
 
-
-    const onSuccess = (reference) => {
-        console.log(reference);
-        setData("reference", data.reference);
-        post(route("order.store", store.username));
+    const onSubmit = (e) => {
+        e.preventDefault();
+        setOrderData({
+            total_price: calculateTotalPrice(),
+            SubtotalToDisplay,
+            SubtotalToPay,
+            charges,
+            orderFrom,
+            orderTo,
+            description: "",
+            content: existingCartItems,
+        });
+        setOpen(true);
     };
-
-    const onClose = () => {
-        console.log("closed");
-        setLoading(false);
-    };
-
-
-    console.log(data.order_to);
 
     return (
         <PageLayout>
             <Head title="Payment" />
+            <ConfirmToPay
+                store={store}
+                open={open}
+                setOpen={setOpen}
+                paystack_pub={paystack_pub}
+                orderData={orderData}
+            />
             <div className="sm:flex sm:justify-center min-h-screen w-full bg-dots-darker bg-center bg-gray-100 selection:bg-gold selection:text-white relative">
                 <div className="container mx-auto p-6 lg:p-8">
                     <div className="flex max-w-7xl p-2 md:p-5 md:mx-9">
@@ -125,11 +116,7 @@ export default function Payment({ auth, store, orderPickupPrices, paystack_pub }
                                 Order Summary
                             </h3>
                             <form
-                                // onSubmit={submit}
-                                onSubmit={(e) => {
-                                    e.preventDefault();
-                                    initializePayment(onSuccess, onClose);
-                                }}
+                                onSubmit={onSubmit}
                                 className="bg-gray-50 h-full w-full p-3 md:p-5"
                             >
                                 <div className="grid lg:flex mb-6">
@@ -384,16 +371,26 @@ export default function Payment({ auth, store, orderPickupPrices, paystack_pub }
 
                                             <select
                                                 onChange={(e) =>
-                                                    setDelivery(e.target.value)
+                                                    setDelivery(
+                                                        JSON.parse(
+                                                            e.target.value
+                                                        )
+                                                    )
                                                 }
-                                                value={delivery}
+                                                value={JSON.stringify(delivery)}
                                                 className="input input-bordered bg-white text-slate-700 w-full"
                                             >
                                                 {location_and_price.map(
                                                     (lap, index) => (
                                                         <option
                                                             key={index}
-                                                            value={lap.price}
+                                                            value={JSON.stringify(
+                                                                {
+                                                                    location:
+                                                                        lap.location,
+                                                                    price: lap.price,
+                                                                }
+                                                            )}
                                                         >
                                                             {lap.location} - ₦
                                                             {lap.price}
@@ -433,7 +430,9 @@ export default function Payment({ auth, store, orderPickupPrices, paystack_pub }
                                                 </div>
                                                 <div className="flex justify-between p-1 w-full">
                                                     <span>Delivery:</span>
-                                                    <span>₦{delivery}</span>
+                                                    <span>
+                                                        ₦{delivery?.price}
+                                                    </span>
                                                 </div>
                                                 <div className="flex justify-between p-1 w-full">
                                                     <span>Charges:</span>

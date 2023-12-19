@@ -43,19 +43,20 @@ class OrderController extends Controller
     public function store(Request $request, Store $store)
     {
         $validated = $request->validate([
-            'reference' => ['required'],
-            'total_price' => ['required'],
-            'paid_price' => ['required'],
-            'received' => ['required'],
-            'charges' => ['required'],
-            'order_from' => ['required'],
-            'order_to' => ['required'],
+            'reference' => [],
+            'total_price' => [],
+            'paid_price' => [],
+            'received' => [],
+            'charges' => [],
+            'order_from' => [],
+            'order_to' => [],
             // 'description' => ['max:9999'],
-            'content' => ['required'],
+            'content' => [],
         ]);
+        // dd($validated);
 
         // Auto-generate the slug using a combination of the reference and a unique identifier
-        $slug = Str::slug($validated['reference'] . '-' . Str::random(8));
+        $slug = Str::slug($validated['reference'] . '-' . "PAID"); //Str::random(8)
         $validated['slug'] = $slug;
 
         // Add user_id to the validated array
@@ -66,7 +67,6 @@ class OrderController extends Controller
         $validated['order_type'] = "1"; // 1 full payment, 2 pay on delivery, 3 part payments
 
         // Debugging to ensure the correct data is present
-        // dd($validated);
 
         Order::create($validated);
 
