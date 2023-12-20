@@ -34,7 +34,7 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard', [
-        'order' => Order::where('user_id', auth()->user('id'))->get(),
+        'orders' => Order::where('user_id', auth()->user()->id)->get(),
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
