@@ -6,7 +6,6 @@ import { Link } from "@inertiajs/react";
 import {
     HiOutlineMenuAlt2,
     HiOutlineSearch,
-    HiOutlineUser,
 } from "react-icons/hi";
 import { BsShop } from "react-icons/bs";
 import SideCart from "./Components/SideCart";
@@ -44,7 +43,7 @@ export default function PageLayout({ user, header, children, store, totalForCart
                             <Dropdown.Trigger>
                                 <div className="btn btn-ghost btn-circle">
                                     <button type="button">
-                                        <HiOutlineUser className="h-5 w-5" />
+                                        <HiOutlineMenuAlt2 className="h-5 w-5" />
                                     </button>
                                 </div>
                             </Dropdown.Trigger>
@@ -53,19 +52,38 @@ export default function PageLayout({ user, header, children, store, totalForCart
                                 <Dropdown.Link href={route("home")}>
                                     Home
                                 </Dropdown.Link>
-                                <Dropdown.Link href={route("dashboard")}>
-                                    Dashboard
+                                <Dropdown.Link href={route("home")}>
+                                    About
                                 </Dropdown.Link>
-                                <Dropdown.Link href={route("profile.edit")}>
-                                    Profile
-                                </Dropdown.Link>
-                                <Dropdown.Link
-                                    href={route("logout")}
-                                    method="post"
-                                    as="button"
-                                >
-                                    Log Out
-                                </Dropdown.Link>
+                                {user ? (
+                                    <>
+                                        <Dropdown.Link
+                                            href={route("dashboard")}
+                                        >
+                                            Dashboard
+                                        </Dropdown.Link>
+                                        <Dropdown.Link
+                                            href={route("logout")}
+                                            method="post"
+                                            as="button"
+                                        >
+                                            Log Out
+                                        </Dropdown.Link>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Dropdown.Link
+                                            href={route("dashboard")}
+                                        >
+                                            Track Order
+                                        </Dropdown.Link>
+                                        <Dropdown.Link
+                                            href={route("login")}
+                                        >
+                                            Log In
+                                        </Dropdown.Link>
+                                    </>
+                                )}
                             </Dropdown.Content>
                         </Dropdown>
                     </div>

@@ -16,12 +16,12 @@ function SideBar() {
                       className="drawer-overlay"
                   ></label>
                   <ul className="menu p-4 w-80 min-h-full bg-white gap-3">
-                      {/* <li>
+                      <li>
                           <ResponsiveNavLink href='/'>
                               <LuHome />
                               <span>Home</span>
                           </ResponsiveNavLink>
-                      </li> */}
+                      </li>
                       <li>
                           <ResponsiveNavLink
                               href={route("dashboard")}

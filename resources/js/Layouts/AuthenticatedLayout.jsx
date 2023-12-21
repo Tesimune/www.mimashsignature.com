@@ -54,12 +54,6 @@ export default function Authenticated({ user, header, store, children }) {
                             </Dropdown.Trigger>
 
                             <Dropdown.Content>
-                                <Dropdown.Link href={route("home")}>
-                                    Home
-                                </Dropdown.Link>
-                                <Dropdown.Link href={route("dashboard")}>
-                                    Dashboard
-                                </Dropdown.Link>
                                 <Dropdown.Link href={route("profile.edit")}>
                                     Profile
                                 </Dropdown.Link>
