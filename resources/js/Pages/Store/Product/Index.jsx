@@ -2,9 +2,9 @@ import React from 'react'
 import PageLayout from "@/Layouts/PageLayout";
 import { Link, Head } from "@inertiajs/react";
 
-export default function Index() {
+export default function Index({ auth }) {
   return (
-      <PageLayout>
+      <PageLayout user={auth.user}>
           <Head title="Welcome" />
           <div className="sm:flex sm:justify-center sm:items-center min-h-screen bg-dots-darker bg-center bg-gray-100 selection:bg-gold selection:text-white">
               <div className="max-w-7xl mx-auto p-6 lg:p-8">

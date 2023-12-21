@@ -3,7 +3,7 @@ import PageLayout from '@/Layouts/PageLayout'
 import { Head } from '@inertiajs/react';
 import React, { useState } from 'react'
 
-export default function View({ order }) {
+export default function View({ auth, order }) {
     const [success, setSuccess] = useState(true);
     setTimeout(() => {
         setSuccess(false);
@@ -11,7 +11,7 @@ export default function View({ order }) {
     // console.log(order);
 
     return (
-        <PageLayout>
+        <PageLayout user={auth.user}>
             <Head title="Order" />
             <div className="max-w-7xl mx-auto py-9 px-3 lg:px-36 xl:px-48">
                 <div className="bg-white flex flex-col items-center py-9 px-3 md:px-9 lg:px-9">

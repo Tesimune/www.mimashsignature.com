@@ -99,7 +99,7 @@ export default function Payment({ auth, store, orderPickupPrices, paystack_pub }
     };
 
     return (
-        <PageLayout>
+        <PageLayout user={auth.user}>
             <Head title="Payment" />
             <ConfirmToPay
                 store={store}

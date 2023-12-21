@@ -2,10 +2,10 @@ import React from "react";
 import { Head, Link } from "@inertiajs/react";
 import PageLayout from "@/Layouts/PageLayout";
 
-export default function Stores({ stores }) {
+export default function Stores({ auth, stores }) {
 
     return (
-        <PageLayout>
+        <PageLayout user={auth.user}>
             <Head title="Stores" />
 
             <div className="sm:flex sm:justify-center sm:items-center pt-9">

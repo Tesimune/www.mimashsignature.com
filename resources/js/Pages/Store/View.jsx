@@ -62,7 +62,7 @@ export default function Welcome({ auth, store, products }) {
     const [searchFilter, setSearchFilter] = useState("");
 
     return (
-        <PageLayout store={store} totalForCart={totalForCart}>
+        <PageLayout user={auth.user} store={store} totalForCart={totalForCart}>
             <Head title="Welcome" />
             <div className="sm:flex sm:justify-center sm:items-center min-h-screen bg-dots-darker bg-center bg-gray-100 selection:bg-gold selection:text-white">
                 <div className="max-w-7xl mx-auto p-6 lg:p-8">

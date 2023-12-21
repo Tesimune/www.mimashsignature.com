@@ -6,7 +6,7 @@ import { IoMdCloseCircle } from "react-icons/io";
 import { MdWhatsapp } from "react-icons/md";
 
 
-export default function Cart({ store }) {
+export default function Cart({ auth, store }) {
     // Initialize cart items using state
     const [existingCartItems, setExistingCartItems] = useState([]);
     const [cartUpdated, setCartUpdated] = useState(false); // Add this line
@@ -72,7 +72,7 @@ const handleQuantityChange = (itemId, newQuantity, newSize, newColor) => {
     };
     
     return (
-        <PageLayout>
+        <PageLayout user={auth.user}>
             <Head title="Welcome" />
             <div className="container mx-auto py-16 p-3 md:px-16 min-h-screen bg-dots-darker bg-center bg-gray-100 selection:bg-gold selection:text-white">
                 <div className="max-w-7xl mx-auto min-h-full bg-white p-6 lg:p-8 rounded-xl">
