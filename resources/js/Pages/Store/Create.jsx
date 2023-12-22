@@ -18,7 +18,7 @@ export default function Create() {
 
     const submit = (e) => {
         e.preventDefault();
-        post(route("store.store"));
+        post(route("myStore.store"));
     };
 
   return (
