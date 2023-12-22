@@ -1,0 +1,1 @@
+import{j as t}from"./app-e1314db8.js";import{A as r}from"./AuthenticatedLayout-3bbc11b6.js";import"./index.esm-19e09d73.js";import"./transition-21b4ef59.js";import"./iconBase-44d39663.js";import"./index.esm-c68f7f5e.js";function s(){return t.jsx(r,{children:"Index"})}export{s as default};
