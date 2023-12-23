@@ -39,7 +39,7 @@ class StoreController extends Controller
      */
     public function index(Store $store)
     {
-        $user_id = auth()->user('id');
+        $user_id = auth()->user()->id;
         return Inertia::render('Store/Index', [
             'stores' => Store::where('user_id', $user_id)->latest()->get(),
         ]);
@@ -71,7 +71,7 @@ class StoreController extends Controller
             'store_description' => ['required', 'string'],
         ]);
 
-        $user_id = auth()->user()->id; // Fix the method call here
+        $user_id = auth()->user()->id;
         $username = str_replace(' ', '-', $validated['store_name']);
 
         Store::create([
