@@ -57,24 +57,22 @@ class StoreController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, Store $store)
+    public function store(Request $request)
     {
         $validated = $request->validate([
-            'username' => ['required','string', 'unique:stores'],
             'email' => ['required', 'string'],
             'tel' => ['required', 'string'],
             'country' => ['required', 'string'],
             'state' => ['required', 'string'],
             'zip_code' => ['required', 'string'],
             'store_address' => ['string'],
-            'store_name' => ['required','string', 'unique:stores'],
+            'store_name' => ['required', 'string', 'unique:stores'],
             'store_type' => ['required', 'string'],
             'store_description' => ['required', 'string'],
         ]);
 
-        $user_id = auth()->user('id');
-        $username =
-        str_replace(' ', '-', $validated['store_name']);
+        $user_id = auth()->user()->id; // Fix the method call here
+        $username = str_replace(' ', '-', $validated['store_name']);
 
         Store::create([
             'user_id' => $user_id,
@@ -85,15 +83,14 @@ class StoreController extends Controller
             'state' => $validated['state'],
             'zip_code' => $validated['zip_code'],
             'store_address' => $validated['store_address'],
-            // 'store_logo' => $validated['store_logo'],
-            'store_name' => ['required', 'string', 'unique:stores'],
+            'store_name' => $validated['store_name'], // Pass the actual value
             'store_type' => $validated['store_type'],
             'store_description' => $validated['store_description'],
-            // 'status' => $validated['email'],
         ]);
 
         return redirect()->route('myStores.index');
     }
+
 
 
     /**
