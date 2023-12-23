@@ -64,7 +64,7 @@ export default function Welcome({ auth, products }) {
     const [searchFilter, setSearchFilter] = useState("");
     const store = {
         id: 1,
-        username: "mimash-signature",
+        username: "Mimashsignature",
     };
 
     return (

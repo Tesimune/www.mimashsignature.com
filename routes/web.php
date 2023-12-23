@@ -24,7 +24,7 @@ use Inertia\Inertia;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
-        'products' => Products::where('store_id', 2)->latest()->get(),
+        'products' => Products::where('store_id', 1)->latest()->get(),
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
