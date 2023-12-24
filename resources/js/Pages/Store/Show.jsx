@@ -30,7 +30,7 @@ export default function Show({ store, products }) {
               </Link>
           </div>
 
-          <div className="sm:flex sm:justify-center sm:items-center min-h-screen bg-dots-darker bg-center bg-gray-100 selection:bg-gold selection:text-white">
+          <div className="min-h-screen bg-dots-darker bg-center bg-gray-100 selection:bg-gold selection:text-white">
               <div className="max-w-7xl mx-auto py-16 md:pt-16 p-6 lg:p-8">
                   {/* <div className="flex justify-center pb-5">
                       <Link href={route("store.view", store.username)}>

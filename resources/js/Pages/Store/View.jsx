@@ -64,7 +64,7 @@ export default function Welcome({ auth, store, products }) {
     return (
         <PageLayout user={auth.user} store={store} totalForCart={totalForCart}>
             <Head title="Welcome" />
-            <div className="sm:flex sm:justify-center sm:items-center min-h-screen bg-dots-darker bg-center bg-gray-100 selection:bg-gold selection:text-white">
+            <div className="min-h-screen bg-dots-darker bg-center bg-gray-100 selection:bg-gold selection:text-white">
                 <div className="max-w-7xl mx-auto p-6 lg:p-8">
                     <div className="flex max-w-7xl p-2 md:p-5 md:mx-9">
                         <input
@@ -74,7 +74,7 @@ export default function Welcome({ auth, store, products }) {
                             className="w-full outline-none border border-gray-300 rounded-md px-3 py-2"
                         />
                     </div>
-                    <div className="flex justify-center">
+                    <div className="mx-auto">
                         <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-9 p-2 md:p-5 xl:p-10 md:mx-9 mb-20">
                             {products
                                 .filter((product) =>
