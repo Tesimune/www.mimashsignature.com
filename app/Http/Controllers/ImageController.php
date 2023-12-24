@@ -42,11 +42,11 @@ class ImageController extends Controller
 
         $file = $request->file("upload");
         $path = $file->storeAs(
-            'uploads/thumbnails',
+            'thumbnails',
             str_replace(" ", "-", $validated["slug"]) . "." . $file->getClientOriginalExtension(),
-            'public'
+            'storage_uploads'
         );
-        $validated["upload"] = '/storage/' . $path;
+        $validated["upload"] = '/uploads/' . $path;
 
         ImageUpload::create($validated);
     }
