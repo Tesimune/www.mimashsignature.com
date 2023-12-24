@@ -1,0 +1,1 @@
+import{j as t}from"./app-7ca0f220.js";import{A as r}from"./AuthenticatedLayout-cca33185.js";import"./index.esm-4c2fa0fe.js";import"./transition-1d7821e4.js";import"./iconBase-b04f5c0e.js";import"./index.esm-c6059cc0.js";function a({orders:o}){return console.log(o),t.jsx(r,{})}export{a as default};
