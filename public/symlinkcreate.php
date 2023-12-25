@@ -1,0 +1,2 @@
+<?php
+symlink('../../uploads','./');
