@@ -48,6 +48,7 @@ class ProductsController extends Controller
             'image' => ['required'],
             'color' => [],
             'size' => [],
+            'category' => [],
             'tag' => [],
             'store_id' => ['required'],
         ]);
@@ -103,6 +104,7 @@ class ProductsController extends Controller
             // Assuming color, size, and tag can be nullable or have specific validation rules
             'color' => [], 
             'size' => [],
+            'category' => [],
             'tag' => [],
         ]);
 
@@ -115,6 +117,7 @@ class ProductsController extends Controller
         $product->image = $validated['image'];
         $product->color = $validated['color'];
         $product->size = $validated['size'];
+        $product->category = $validated['category'];
         $product->tag = $validated['tag'];
         $product->save();
 

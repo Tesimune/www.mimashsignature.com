@@ -18,6 +18,7 @@ class Products extends Model
         'image',
         'color',
         'size',
+        'category',
         'tag',
         'store_id',
         'user_id', 

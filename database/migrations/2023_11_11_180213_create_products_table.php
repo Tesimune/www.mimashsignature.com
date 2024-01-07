@@ -20,9 +20,11 @@ return new class extends Migration
             $table->integer('quantity')->nullable();
             $table->text('description')->nullable();
             $table->text('image');
+            $table->text('category')->nullable();
             $table->text('tag')->nullable();
             $table->text('color')->nullable();
             $table->text('size')->nullable();
+            $table->text('options')->nullable();
             $table->foreignId('store_id')->references('id')->on('stores');
             $table->foreignId('user_id')->references('id')->on('users');
             $table->timestamps();
