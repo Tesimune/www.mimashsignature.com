@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ImageUpload;
+use App\Models\ProductCategory;
 use App\Models\Products;
 use App\Models\Store;
 use Illuminate\Auth\Events\Validated;
@@ -29,7 +30,8 @@ class ProductsController extends Controller
         // $this->authorize('create', Product::class);
         return Inertia::render('Store/Product/Create',[
             'store' => $store,
-            'thumbnails' => ImageUpload::all(),
+            'thumbnails' => ImageUpload::latest()->get(),
+            'category' => ProductCategory::where('store_id', $store->id)->latest()->get(),
         ]);
     }
 
@@ -83,7 +85,8 @@ class ProductsController extends Controller
         return Inertia::render('Store/Product/Edit', [
             'store' => $store,
             'product' => $product,
-            'thumbnails' => ImageUpload::all(),
+            'thumbnails' => ImageUpload::latest()->get(),
+            'category' => ProductCategory::where('store_id', $store->id)->latest()->get(),
         ]);
     }
 
