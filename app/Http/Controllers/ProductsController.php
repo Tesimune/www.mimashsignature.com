@@ -31,7 +31,7 @@ class ProductsController extends Controller
         return Inertia::render('Store/Product/Create',[
             'store' => $store,
             'thumbnails' => ImageUpload::latest()->get(),
-            'category' => ProductCategory::where('store_id', $store->id)->latest()->get(),
+            'categories' => ProductCategory::where('store_id', $store->id)->latest()->get(),
         ]);
     }
 
@@ -86,7 +86,7 @@ class ProductsController extends Controller
             'store' => $store,
             'product' => $product,
             'thumbnails' => ImageUpload::latest()->get(),
-            'category' => ProductCategory::where('store_id', $store->id)->latest()->get(),
+            'categories' => ProductCategory::where('store_id', $store->id)->latest()->get(),
         ]);
     }
 

@@ -31,7 +31,7 @@ class ProductCategoryController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string'],
-            'description' => ['required', 'string'],
+            'description' => ['max:225'],
             'store_id' => ['required'],
         ]);
 
