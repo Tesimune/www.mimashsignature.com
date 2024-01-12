@@ -5,8 +5,9 @@ import ImageUpload from "@/Layouts/Components/ImageUpload";
 import Color from "@/Pages/Store/Product/Components/Color";
 import Size from "@/Pages/Store/Product/Components/Size";
 import Tag from "@/Pages/Store/Product/Components/Tag";
+import Category from "./Components/Category";
 
-export default function Create({ store, thumbnails }) {
+export default function Create({ store, thumbnails, categories }) {
 
     const { data, setData, errors, post } = useForm({
         name: "",
@@ -17,6 +18,7 @@ export default function Create({ store, thumbnails }) {
         color: "",
         size: "",
         image: "",
+        category: "",
         tag: "",
         description: "",
         store_id: store.id,
@@ -120,11 +122,19 @@ export default function Create({ store, thumbnails }) {
                                                 Tag's?
                                             </span>
                                         </label>
-                                        <Tag
-                                            tag={data.tag}
-                                            setTag={setData}
-                                        />
+                                        <Tag tag={data.tag} setTag={setData} />
                                     </div>
+                                    <label className="label">
+                                        <span className="label-text">
+                                            Category?
+                                        </span>
+                                    </label>
+                                    <Category
+                                        store={store}
+                                        categories={categories}
+                                        category={data.category}
+                                        setCategory={setData}
+                                    />
                                 </div>
                             </div>
                             <div className="grid gap-9">

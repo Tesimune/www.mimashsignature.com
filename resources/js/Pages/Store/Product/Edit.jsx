@@ -5,9 +5,10 @@ import ImageUpload from "@/Layouts/Components/ImageUpload";
 import Color from "@/Pages/Store/Product/Components/Color";
 import Size from "@/Pages/Store/Product/Components/Size";
 import Tag from "@/Pages/Store/Product/Components/Tag";
+import Category from "./Components/Category";
 
 
-export default function Edit({ store, product, thumbnails }) {
+export default function Edit({ store, product, thumbnails, categories }) {
     const [color, setColor] = useState([]);
     const [size, setSize] = useState([]);
 
@@ -20,6 +21,7 @@ export default function Edit({ store, product, thumbnails }) {
         color: product.color ?? "",
         size: product.size ?? "",
         image: product.image ?? "",
+        category: product.category ?? "",
         tag: product.tag ?? "",
         description: product.description ?? "",
         store_id: product.store_id ?? store.id,
@@ -27,7 +29,12 @@ export default function Edit({ store, product, thumbnails }) {
 
     const submit = (e) => {
         e.preventDefault();
-        put(route("product.update", { store: store.username, product: product.id }));
+        put(
+            route("product.update", {
+                store: store.username,
+                product: product.id,
+            })
+        );
     };
 
     return (
@@ -125,6 +132,17 @@ export default function Edit({ store, product, thumbnails }) {
                                         </label>
                                         <Tag tag={data.tag} setTag={setData} />
                                     </div>
+                                    <label className="label">
+                                        <span className="label-text">
+                                            Category?
+                                        </span>
+                                    </label>
+                                    <Category
+                                        store={store}
+                                        categories={categories}
+                                        category={data.category}
+                                        setCategory={setData}
+                                    />
                                 </div>
                             </div>
                             <div className="grid gap-9">
