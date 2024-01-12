@@ -5,6 +5,19 @@ import { MdDelete } from "react-icons/md";
 
 function Category({ store, categories, category, setCategory }) {
     const [show, setShow] = useState(false);
+    
+    function getCategoryNameById(categories, category) {
+        for (const ct of categories) {
+            if (ct.id == category) {
+                return ct.name;
+            }
+        }
+        // Return a default value or handle the case when no match is found
+        return "Category not found";
+    }
+    
+    const categoryName = getCategoryNameById(categories, category);
+
 
     const select = () => {
         setShow(true);
@@ -48,9 +61,9 @@ function Category({ store, categories, category, setCategory }) {
                     className="cursor-pointer border-2 rounded-xl"
                     onClick={select}
                 >
-                    {category.length ? (
+                    {categoryName.length ? (
                         <span className="flex justify-center items-center gap-3 h-full w-full">
-                            {category}
+                            {categoryName}
                         </span>
                     ) : (
                         <span className="flex justify-center items-center gap-3 h-full w-full">
@@ -70,7 +83,7 @@ function Category({ store, categories, category, setCategory }) {
                             <span
                                 className="flex w-full p-2"
                                 onClick={(e) => {
-                                    setCategory("category", ct.name);
+                                    setCategory("category", ct.id);
                                     setShow(false);
                                 }}
                             >
