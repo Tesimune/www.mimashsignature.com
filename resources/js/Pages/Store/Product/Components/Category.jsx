@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Modal from "@/Components/Modal";
 import { useForm } from "@inertiajs/react";
-import { MdOutlinePhotoSizeSelectActual } from "react-icons/md";
+import { MdDelete } from "react-icons/md";
 
 function Category({ store, categories, category, setCategory }) {
     const [show, setShow] = useState(false);
@@ -25,6 +25,22 @@ function Category({ store, categories, category, setCategory }) {
         post(route("category.store", store));
     };
 
+    const { delete: remove } = useForm();
+
+    const deleteCategory = (ct) => {
+        const response = confirm(
+            "You Are About To Delete" + " " + ct.name
+        );
+        if (response) {
+            remove(
+                route("category.destroy", {
+                    store: store.username,
+                    category: ct,
+                })
+            );
+        }
+    };
+
     return (
         <div>
             <div className="grid gap-2">
@@ -45,18 +61,28 @@ function Category({ store, categories, category, setCategory }) {
             </div>
 
             <Modal show={show} onClose={closeModal}>
-                <div className="fle flex-col gap-5 h-[440px] p-3 scroll overflow-auto">
+                <div className="flex flex-col gap-5 h-[430px] p-3 scroll overflow-auto">
                     {categories.map((ct) => (
-                        <span
+                        <div
                             key={ct.id}
-                            className="flex w-full p-2 my-2 border-2 cursor-pointer"
-                            onClick={(e) => {
-                                setCategory("category", ct.name);
-                                setShow(false);
-                            }}
+                            className="flex w-full border-2 cursor-pointer"
                         >
-                            {ct.name}
-                        </span>
+                            <span
+                                className="flex w-full p-2"
+                                onClick={(e) => {
+                                    setCategory("category", ct.name);
+                                    setShow(false);
+                                }}
+                            >
+                                {ct.name}
+                            </span>
+                            <button
+                                onClick={() => deleteCategory(ct)}
+                                className="bg-red-500 text-white p-2 border-0 outline-none"
+                            >
+                                <MdDelete />
+                            </button>
+                        </div>
                     ))}
                 </div>
 

@@ -79,8 +79,8 @@ class ProductCategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Store $store, ProductCategory $productCategory)
+    public function destroy(Store $store, ProductCategory $category)
     {
-        $productCategory->delete();
+        $category->delete();
     }
 }
