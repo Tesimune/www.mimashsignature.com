@@ -5,6 +5,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Order;
 use App\Models\OrderPickupPrice;
+use App\Models\ProductCategory;
 use App\Models\Products;
 use App\Models\Store;
 use Illuminate\Foundation\Application;
@@ -25,6 +26,7 @@ use Inertia\Inertia;
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'products' => Products::where('store_id', 1)->latest()->get(),
+        'categories' => ProductCategory::where('store_id', 1)->get(),
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,

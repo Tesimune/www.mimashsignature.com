@@ -4,7 +4,7 @@ import { Link, Head } from "@inertiajs/react";
 import { MdShoppingCart, MdRemoveShoppingCart } from "react-icons/md";
 import Show from "../Store/Product/Show";
 
-export default function Welcome({ auth, store, products }) {
+export default function Welcome({ auth, store, products, categories }) {
     // Initialize cart items using state
     const [existingCartItems, setExistingCartItems] = useState([]);
     const [totalForCart, setTotalForCart] = useState(0);
@@ -60,27 +60,54 @@ export default function Welcome({ auth, store, products }) {
     };
 
     const [searchFilter, setSearchFilter] = useState("");
+    const [selectedCategory, setSelectedCategory] = useState("");
 
     return (
         <PageLayout user={auth.user} store={store} totalForCart={totalForCart}>
             <Head title="Welcome" />
             <div className="min-h-screen bg-dots-darker bg-center bg-gray-100 selection:bg-gold selection:text-white">
                 <div className="max-w-7xl mx-auto p-6 lg:p-8">
-                    <div className="flex max-w-7xl p-2 md:p-5 md:mx-9">
+                    <div className="flex flex-col gap-2 max-w-7xl p-2 md:p-5 md:mx-9">
                         <input
                             placeholder="Search"
                             value={searchFilter}
                             onChange={(e) => setSearchFilter(e.target.value)}
                             className="w-full outline-none border border-gray-300 rounded-md px-3 py-2"
                         />
+                        {categories.length && (
+                            <select
+                                value={selectedCategory}
+                                onChange={(e) =>
+                                    setSelectedCategory(e.target.value)
+                                }
+                                className="border border-gray-300 rounded-md px-3 py-2"
+                            >
+                                <option value="">All Categories</option>
+                                {categories?.map((category) => (
+                                    <option
+                                        key={category.id}
+                                        value={category.id}
+                                    >
+                                        {category.name}
+                                    </option>
+                                ))}
+                            </select>
+                        )}
                     </div>
                     <div className="mx-auto">
                         <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-9 p-2 md:p-5 xl:p-10 md:mx-9 mb-20">
                             {products
-                                .filter((product) =>
-                                    product.name
-                                        .toLowerCase()
-                                        .includes(searchFilter.toLowerCase())
+                                .filter(
+                                    (product) =>
+                                        product.name
+                                            .toLowerCase()
+                                            .includes(
+                                                searchFilter.toLowerCase()
+                                            ) &&
+                                        (selectedCategory
+                                            ? product.category ==
+                                              selectedCategory
+                                            : true)
                                 )
                                 .map((product, index) => (
                                     <div

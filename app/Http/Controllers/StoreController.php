@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\OrderPickupPrice;
+use App\Models\ProductCategory;
 use App\Models\Products;
 use App\Models\Store;
 use Illuminate\Http\Request;
@@ -29,6 +30,7 @@ class StoreController extends Controller
         return Inertia::render('Store/View', [
             'store' => $store,
             'products' => Products::where('store_id', $store->id)->latest()->get(),
+            'categories' => ProductCategory::where('store_id', $store->id)->get(),
         ]);
     }
 
@@ -42,6 +44,7 @@ class StoreController extends Controller
         $user_id = auth()->user()->id;
         return Inertia::render('Store/Index', [
             'stores' => Store::where('user_id', $user_id)->latest()->get(),
+            'categories' => ProductCategory::where('store_id', $store->id)->get(),
         ]);
     }
 
@@ -101,6 +104,7 @@ class StoreController extends Controller
         return Inertia::render('Store/Show', [
             'store' => $store,
             'products' => Products::where('store_id', $store->id)->latest()->get(),
+            'categories' => ProductCategory::where('store_id', $store->id)->get(),
         ]);
     }
 
