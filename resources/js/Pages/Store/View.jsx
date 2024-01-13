@@ -72,27 +72,25 @@ export default function Welcome({ auth, store, products, categories }) {
                             placeholder="Search"
                             value={searchFilter}
                             onChange={(e) => setSearchFilter(e.target.value)}
-                            className="w-full outline-none border border-gray-300 rounded-md px-3 py-2"
+                            className="flex w-full outline-none border border-gray-300 rounded-md px-3 py-2"
                         />
-                        {categories.length && (
-                            <select
-                                value={selectedCategory}
-                                onChange={(e) =>
-                                    setSelectedCategory(e.target.value)
-                                }
-                                className="border border-gray-300 rounded-md px-3 py-2"
-                            >
-                                <option value="">All Categories</option>
-                                {categories?.map((category) => (
-                                    <option
-                                        key={category.id}
-                                        value={category.id}
-                                    >
-                                        {category.name}
-                                    </option>
-                                ))}
-                            </select>
-                        )}
+                        <select
+                            value={selectedCategory}
+                            onChange={(e) =>
+                                setSelectedCategory(e.target.value)
+                            }
+                            className="flex outline-none border border-gray-300 rounded-md px-3 py-2"
+                        >
+                            <option value="">All Categories</option>
+                            {categories?.map((category) => (
+                                <option
+                                    key={category.id}
+                                    value={category.id}
+                                >
+                                    {category.name}
+                                </option>
+                            ))}
+                        </select>
                     </div>
                     <div className="mx-auto">
                         <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-9 p-2 md:p-5 xl:p-10 md:mx-9 mb-20">
