@@ -30,7 +30,7 @@ class ProductsController extends Controller
         // $this->authorize('create', Product::class);
         return Inertia::render('Store/Product/Create',[
             'store' => $store,
-            'thumbnails' => ImageUpload::latest()->get(),
+            'thumbnails' => ImageUpload::where('store_id', $store->id)->latest()->get(),
             'categories' => ProductCategory::where('store_id', $store->id)->latest()->get(),
         ]);
     }
@@ -85,7 +85,7 @@ class ProductsController extends Controller
         return Inertia::render('Store/Product/Edit', [
             'store' => $store,
             'product' => $product,
-            'thumbnails' => ImageUpload::latest()->get(),
+            'thumbnails' => ImageUpload::where('store_id', $store->id)->latest()->get(),
             'categories' => ProductCategory::where('store_id', $store->id)->latest()->get(),
         ]);
     }
