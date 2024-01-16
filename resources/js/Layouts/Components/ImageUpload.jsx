@@ -33,6 +33,9 @@ function ImageUpload({ thumbnails, store, image, setImage }) {
         setImage('image', newArray);
     };
     
+    const handleImageError = (e) => {
+        e.target.src = "/mimash.png"; // Replace with your fallback image URL
+    };
 
     return (
         <div>
@@ -49,6 +52,7 @@ function ImageUpload({ thumbnails, store, image, setImage }) {
                                     className="h-full w-full rounded-xl object-cover"
                                     src={im.url}
                                     alt={im.url}
+                                    onError={handleImageError}
                                 />
                             </div>
                         ))}
@@ -81,6 +85,7 @@ function ImageUpload({ thumbnails, store, image, setImage }) {
                                 }}
                                 src={thumbnail.upload}
                                 alt={thumbnail.upload}
+                                onError={handleImageError}
                             />
                             <div className="flex justify-center items-center gap-3 p-3">
                                 <span
@@ -111,12 +116,13 @@ function ImageUpload({ thumbnails, store, image, setImage }) {
                                 type="file"
                                 accept="image/*"
                                 onChange={(e) =>
-                                    setData("upload", e.target.files[0])
+                                    setData("upload", e.target.files)
                                 }
                                 className="w-full py-3 px-5 border-l-8 border-as rounded outline-none"
+                                multiple
                             />
                             {errors.upload && (
-                                <p className="text-red-500">{errors.upload}</p>
+                                <p className="text-red-500">{errors.upload[0]}</p>
                             )}
                             {errors.type && (
                                 <p className="text-red-500">{errors.type}</p>

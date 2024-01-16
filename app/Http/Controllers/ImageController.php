@@ -31,26 +31,27 @@ class ImageController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            "upload" => 'required|image',
+            "upload" => 'required|array', // Validate 'upload' as an array
+            "upload.*" => 'image|mimes:jpeg,png,jpg,gif,svg|max:9048', // Validate each image file
             "type" => 'required',
             "store_id" => 'required',
         ]);
 
-        $validated["slug"] = Str::random(39);
+        
+        foreach ($request->file('upload') as $file) {
+            $validated["slug"] = Str::random(39);
+            $validated["user_id"] = auth()->id();
+            $path = $file->storeAs(
+                'thumbnails',
+                str_replace(" ", "-", $validated["slug"]) . "." . $file->getClientOriginalExtension(),
+                'storage_uploads'
+            );
+            $validated["upload"] = '/uploads/' . $path;
 
-        $validated["user_id"] = auth()->id();
+            ImageUpload::create($validated);
+        }
 
-        $file = $request->file("upload");
-        $path = $file->storeAs(
-            'thumbnails',
-            str_replace(" ", "-", $validated["slug"]) . "." . $file->getClientOriginalExtension(),
-            'storage_uploads'
-        );
-        $validated["upload"] = '/uploads/' . $path;
-
-        ImageUpload::create($validated);
     }
-
     /**
      * Display the specified resource.
      */
