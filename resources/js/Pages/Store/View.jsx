@@ -61,7 +61,11 @@ export default function Welcome({ auth, store, products, categories }) {
 
     const [searchFilter, setSearchFilter] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("");
-
+    
+    const handleImageError = (e) => {
+        e.target.src = "/mimash.png"; // Replace with your fallback image URL
+    };
+    
     return (
         <PageLayout user={auth.user} store={store} totalForCart={totalForCart}>
             <Head title="Welcome" />
@@ -83,10 +87,7 @@ export default function Welcome({ auth, store, products, categories }) {
                         >
                             <option value="">All Categories</option>
                             {categories?.map((category) => (
-                                <option
-                                    key={category.id}
-                                    value={category.id}
-                                >
+                                <option key={category.id} value={category.id}>
                                     {category.name}
                                 </option>
                             ))}
@@ -117,6 +118,7 @@ export default function Welcome({ auth, store, products, categories }) {
                                                 src={product.image[0].url}
                                                 alt={product.name}
                                                 className="object-cover h-full w-full"
+                                                onError={handleImageError}
                                             />
                                         </figure>
                                         <div className="card-body bg-white text-slate-900">

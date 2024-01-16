@@ -37,6 +37,10 @@ export default function Edit({ store, product, thumbnails, categories }) {
         );
     };
 
+    const handleImageError = (e) => {
+        e.target.src = "/mimash.png"; // Replace with your fallback image URL
+    };
+
     return (
         <AuthenticatedLayout
         // user={auth.user}
@@ -74,6 +78,7 @@ export default function Edit({ store, product, thumbnails, categories }) {
                                                 className="h-full w-full rounded-xl object-cover"
                                                 src={data.image[0].url} // Assuming img is an array with a 'url' property
                                                 alt={data.image[0].url} // Consider providing more meaningful alt text
+                                                onError={handleImageError}
                                             />
                                         ) : null}
                                     </div>

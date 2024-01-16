@@ -17,6 +17,11 @@ export default function Show({ store, products }) {
             );
         }
     };
+    
+    const handleImageError = (e) => {
+        e.target.src = "/mimash.png"; // Replace with your fallback image URL
+    };
+
   return (
       <Authenticated store={store}>
           <Head title={store.store_name} />
@@ -49,6 +54,7 @@ export default function Show({ store, products }) {
                                           src={product.image[0].url}
                                           alt={product.name}
                                           className="h-full w-full object-cover"
+                                          onError={handleImageError}
                                       />
                                   </figure>
                                   <div className="card-body bg-white text-slate-900">
